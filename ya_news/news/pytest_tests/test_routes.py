@@ -17,9 +17,10 @@ def test_pages_availability_for_anonymous_user(client, name):
 
 
 @pytest.mark.django_db
-def test_detail_news_page_availability_for_anonymous_user(client, news):
-    url = reverse('news:detail', args=(news.id,))
-    response = client.get(url)
+def test_detail_news_page_availability_for_anonymous_user(
+    client, news, news_detail_url
+):
+    response = client.get(news_detail_url)
     assert response.status_code == HTTPStatus.OK
 
 
@@ -31,13 +32,15 @@ def test_detail_news_page_availability_for_anonymous_user(client, news):
     ),
 )
 @pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete'),
+    'url',
+    (
+        pytest.lazy_fixture('comment_edit_url'),
+        pytest.lazy_fixture('comment_delete_url')
+    )
 )
 def test_availability_for_comment_edit_and_delete(
-        parametrized_client, name, comment, expected_status
+        parametrized_client, url, comment, expected_status
 ):
-    url = reverse(name, args=(comment.id,))
     response = parametrized_client.get(url)
     assert response.status_code == expected_status
 

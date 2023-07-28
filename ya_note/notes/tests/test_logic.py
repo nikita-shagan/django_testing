@@ -55,9 +55,9 @@ class TestNoteEditDeleteCreate(TestCase):
         response = self.author_client.post(
             self.add_url, data=self.new_form_data
         )
-        self.assertRedirects(response, reverse('notes:success'))
+        self.assertRedirects(response, self.success_url)
         self.assertEqual(Note.objects.count(), 2)
-        new_note = Note.objects.filter(slug=self.new_form_data['slug']).get()
+        new_note = Note.objects.last()
         self.assertEqual(new_note.title, self.NEW_NOTE_TITLE)
         self.assertEqual(new_note.text, self.NEW_NOTE_TEXT)
         self.assertEqual(new_note.slug, self.NEW_NOTE_SLUG)
@@ -80,7 +80,7 @@ class TestNoteEditDeleteCreate(TestCase):
         self.author_client.post(self.add_url, data=form_data)
         self.assertEqual(Note.objects.count(), 2)
         expected_slug = slugify(self.new_form_data['title'])
-        note = Note.objects.filter(slug=expected_slug).get()
+        note = Note.objects.last()
         self.assertEqual(note.slug, expected_slug)
 
     def test_author_can_delete_note(self):

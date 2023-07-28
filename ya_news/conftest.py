@@ -1,12 +1,13 @@
+import random
 from datetime import datetime, timedelta
 
 import pytest
+from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
 from news.forms import BAD_WORDS
-from news.models import News, Comment
-from yanews import settings
+from news.models import Comment, News
 
 
 @pytest.fixture
@@ -80,15 +81,15 @@ def comment_delete_url(comment):
 
 
 @pytest.fixture
-def form_data():
+def news_form_data():
     return {'text': 'Comment text'}
 
 
 @pytest.fixture
-def new_form_data():
+def updated_news_form_data():
     return {'text': 'New comment text'}
 
 
 @pytest.fixture
 def bad_words_data():
-    return {'text': f'Some text, {BAD_WORDS[0]}, and more text'}
+    return {'text': f'Some text, {random.choice(BAD_WORDS)}, and more text'}

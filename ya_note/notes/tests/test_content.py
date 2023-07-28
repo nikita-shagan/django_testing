@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from notes.forms import NoteForm
 from notes.models import Note
 
 User = get_user_model()
@@ -33,12 +34,15 @@ class TestContent(TestCase):
     def test_notes_list_for_different_users(self):
         clients = ((self.author_client, True), (self.reader_client, False))
         for client, x_note_in_list in clients:
-            response = client.get(self.notes_list_url)
-            actual_note_in_list = self.note in response.context['object_list']
-            self.assertEqual(x_note_in_list, actual_note_in_list)
+            with self.subTest():
+                response = client.get(self.notes_list_url)
+                note_in_list = self.note in response.context['object_list']
+                self.assertEqual(x_note_in_list, note_in_list)
 
     def test_pages_contains_form(self):
         urls = (self.notes_add_url, self.notes_edit_url)
         for url in urls:
-            response = self.author_client.get(url)
-            self.assertIn('form', response.context)
+            with self.subTest():
+                response = self.author_client.get(url)
+                self.assertIn('form', response.context)
+                self.assertIsInstance(response.context['form'], NoteForm)
